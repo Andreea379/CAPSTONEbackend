@@ -2,16 +2,21 @@ package com.example.capstone.Services;
 
 import com.example.capstone.Enumerations.Roles;
 import com.example.capstone.Exceptions.EmailDuplicated;
+import com.example.capstone.Exceptions.UserNotFound;
 import com.example.capstone.Exceptions.UsernameDuplicated;
+import com.example.capstone.Models.Profile;
 import com.example.capstone.Models.Role;
 import com.example.capstone.Models.User;
 import com.example.capstone.Payloads.Requests.RegistrationRequest;
 import com.example.capstone.Payloads.UserDTO;
+import com.example.capstone.Repositories.ProfileRepository;
 import com.example.capstone.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @Transactional
@@ -21,6 +26,8 @@ public class UserService {
     UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    ProfileRepository profileRepository;
 
     public String saveUser(RegistrationRequest userRequest){
         checkDuplicatedKey(userRequest.getUsername(), userRequest.getEmail());
@@ -36,6 +43,7 @@ public class UserService {
         );
         user.setRole(new Role(Roles.USER_ROLE));
         userRepository.save(user);
+        createProfileByUser(user);
         return "The user " + user.getUsername() + " with id " +user.getId() + " was saved correctly";
     }
 
@@ -45,6 +53,33 @@ public class UserService {
         }
         if(userRepository.existsByEmail(email)){
             throw new EmailDuplicated("Email already exists!");
+        }
+    }
+
+    private void createProfileByUser(User user){
+        Profile profile = new Profile();
+        profile.setUser(user);
+        profile.setFirstName(user.getFirstName());
+        profile.setLastName(user.getLastName());
+        profile.setProfession("");
+        profile.setDescription("");
+        profile.setPublicationDate(LocalDate.now());
+        profile.setFollowers(0);
+        profile.setFollowing(0);
+        profile.setProfileImage("");
+        profileRepository.save(profile);
+    }
+
+    public void deleteUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFound("User not found with ID: " + userId));
+        deleteProfileByUser(user);  // Delete associated profile
+        userRepository.delete(user); // Delete user
+    }
+    private void deleteProfileByUser(User user) {
+        Profile profile = profileRepository.findByUserId(user.getId()); // Find the profile associated with the user
+        if (profile != null) {
+            profileRepository.delete(profile); // Delete the profile if it exists
         }
     }
 

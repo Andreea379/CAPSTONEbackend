@@ -3,6 +3,7 @@ package com.example.capstone.Contollers;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.capstone.Exceptions.EmailDuplicated;
+import com.example.capstone.Exceptions.UserNotFound;
 import com.example.capstone.Exceptions.UsernameDuplicated;
 import com.example.capstone.Payloads.Requests.LoginRequest;
 import com.example.capstone.Payloads.Requests.RegistrationRequest;
@@ -109,5 +110,16 @@ public class UserController {
         } catch (AuthenticationException e){
             return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUserAndProfile(@PathVariable Long userId){
+        try{
+            userService.deleteUserById(userId);
+            return new ResponseEntity<>("User deleted!", HttpStatus.OK);
+        }catch (UserNotFound u){
+            return new ResponseEntity<>("User not found!", HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

@@ -33,6 +33,8 @@ public class User {
 
     @Embedded
     private Role role;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Profile profile;
 
     public User(String username, String email, String password, String firstName, String lastName) {
         this.username = username;
