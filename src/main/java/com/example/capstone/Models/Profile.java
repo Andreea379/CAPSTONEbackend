@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "profiles")
@@ -35,4 +36,6 @@ public class Profile {
     private int following;
     @Column(nullable = false)
     private String profileImage;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Article> article;
 }

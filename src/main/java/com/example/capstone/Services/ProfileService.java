@@ -8,14 +8,20 @@ import com.example.capstone.Repositories.ProfileRepository;
 import com.example.capstone.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ProfileService {
 
     @Autowired
     UserRepository userRepository;
     @Autowired
     ProfileRepository profileRepository;
+
+    public Profile getProfileByUserId(Long userId) {
+        return profileRepository.findByUserId(userId);
+    }
 
     public ProfileDTO getProfileByUsername(String username){
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFound("User not found!"));

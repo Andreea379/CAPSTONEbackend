@@ -57,6 +57,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/user/**").permitAll()
+                                .requestMatchers("/profile/**").permitAll()
+                                .requestMatchers("/article/**").permitAll()
                                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
