@@ -1,5 +1,7 @@
 package com.example.capstone.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,13 +18,13 @@ import java.util.List;
 public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idProfile;
+    private Long id;
     @OneToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(nullable = false)
     private User user;
-    @Column(nullable = false)
+
     private String firstName;
-    @Column(nullable = false)
+
     private String lastName;
     @Column(nullable = false)
     private String profession;
@@ -30,12 +32,10 @@ public class Profile {
     private String description;
     @Column(nullable = false)
     private LocalDate publicationDate;
-    @Column(nullable = false)
-    private int followers;
-    @Column(nullable = false)
-    private int following;
+
     @Column(nullable = false)
     private String profileImage;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Article> article;
 }
