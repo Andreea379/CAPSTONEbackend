@@ -1,6 +1,7 @@
 package com.example.capstone.Security.JWT;
 
 import com.example.capstone.Security.Services.UserDetailsImpl;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -47,7 +48,7 @@ public class JwtUtils {
         try{
             Jwts.parserBuilder().setSigningKey(getKey()).build().parse(token);
             return true;
-        }catch (Exception e){
+        }catch (JwtException | IllegalArgumentException e){
             return false;
         }
     }
