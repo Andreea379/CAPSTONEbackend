@@ -36,6 +36,4 @@ public class RegistrationRequest {
 
     private Role role;
 
-    @URL
-    private String avatar;
 }
