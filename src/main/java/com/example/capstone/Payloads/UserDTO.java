@@ -31,6 +31,4 @@ public class UserDTO {
     @NotNull(message = "Last name field couldn't be null")
     private String lastName;
 
-    @URL
-    private String avatar;
 }

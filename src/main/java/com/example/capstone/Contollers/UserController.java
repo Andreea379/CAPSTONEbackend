@@ -2,9 +2,12 @@ package com.example.capstone.Contollers;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.example.capstone.Enumerations.Roles;
 import com.example.capstone.Exceptions.EmailDuplicated;
 import com.example.capstone.Exceptions.UserNotFound;
 import com.example.capstone.Exceptions.UsernameDuplicated;
+import com.example.capstone.Models.Article;
+import com.example.capstone.Models.Role;
 import com.example.capstone.Payloads.Requests.LoginRequest;
 import com.example.capstone.Payloads.Requests.RegistrationRequest;
 import com.example.capstone.Payloads.Response.JwtResponse;
@@ -34,8 +37,6 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    Cloudinary cloudinary;
-    @Autowired
     UserService userService;
     @Autowired
     AuthenticationManager authenticationManager;
@@ -43,7 +44,8 @@ public class UserController {
     JwtUtils jwtUtils;
 
     @PostMapping("/registration")
-    public ResponseEntity<String> userRegistration(@RequestPart("user") @Validated RegistrationRequest newUser, BindingResult validation, @RequestPart(value = "avatar") MultipartFile avatar){
+    public ResponseEntity<?> userRegistration(@RequestPart("user") @Validated RegistrationRequest newUser, BindingResult validation
+    ){
 
         if(validation.hasErrors()){
             StringBuilder message = new StringBuilder("Problems with the validation: \n");
@@ -55,14 +57,12 @@ public class UserController {
         }
 
         try{
+            newUser.setRole(new Role(Roles.USER_ROLE));
+            userService.saveUser(newUser);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 
-            Map mapUpload = cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.emptyMap());
-            String urlImage = mapUpload.get("secure_url").toString();
-            newUser.setAvatar(urlImage);
-            String saveUserMessage = userService.saveUser(newUser);
-            return new ResponseEntity<>(saveUserMessage, HttpStatus.CREATED);
-
-        } catch (IOException | EmailDuplicated | UsernameDuplicated e){
+        } catch (
+                EmailDuplicated | UsernameDuplicated e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -112,14 +112,5 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUserAndProfile(@PathVariable Long userId){
-        try{
-            userService.deleteUserById(userId);
-            return new ResponseEntity<>("User deleted!", HttpStatus.OK);
-        }catch (UserNotFound u){
-            return new ResponseEntity<>("User not found!", HttpStatus.BAD_REQUEST);
-        }
 
-    }
 }

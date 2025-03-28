@@ -64,45 +64,8 @@ public class UserService {
         profile.setProfession("");
         profile.setDescription("");
         profile.setPublicationDate(LocalDate.now());
-        profile.setFollowers(0);
-        profile.setFollowing(0);
         profile.setProfileImage("");
         profileRepository.save(profile);
     }
 
-    public void deleteUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFound("User not found with ID: " + userId));
-        deleteProfileByUser(user);  // Delete associated profile
-        userRepository.delete(user); // Delete user
-    }
-    private void deleteProfileByUser(User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()); // Find the profile associated with the user
-        if (profile != null) {
-            profileRepository.delete(profile); // Delete the profile if it exists
-        }
-    }
-
-
-    public User fromUserDTOtoUser(UserDTO userDTO){
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setAvatar(userDTO.getAvatar());
-        return user;
-    }
-
-    public UserDTO fromUserToUserDTO(User user){
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(user.getUsername());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setPassword(user.getPassword());
-        userDTO.setFirstName(user.getFirstName());
-        userDTO.setLastName(user.getLastName());
-        userDTO.setAvatar(user.getAvatar());
-        return userDTO;
-    }
 }
