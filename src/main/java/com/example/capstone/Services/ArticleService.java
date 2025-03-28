@@ -1,16 +1,18 @@
 package com.example.capstone.Services;
 
 import com.example.capstone.Exceptions.ArticleNotFound;
+import com.example.capstone.Exceptions.ProfileNotFound;
 import com.example.capstone.Models.Article;
+import com.example.capstone.Models.Profile;
 import com.example.capstone.Payloads.ArticleDTO;
 import com.example.capstone.Repositories.ArticleRepository;
 import com.example.capstone.Repositories.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,25 +22,44 @@ public class ArticleService {
     @Autowired
     ArticleRepository articleRepository;
 
-    public Long saveArticle(Article article){
-        articleRepository.save(article);
-        return article.getArticleId();
+    public Article saveArticle(ArticleDTO articleDTO, Long profileId){
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFound("Profile not found"));
+        Article article =  fromArticleDTOtoArticle(articleDTO);
+        article.setAuthor(profile);
+        return articleRepository.save(article);
     }
 
-    public Article updateArticle(ArticleDTO articleDTO, Long articleId){
-        List<Article> articleFound = articleRepository.findByArticleId(articleId);
-        if(articleFound.isEmpty()){
-            throw new ArticleNotFound("Article not found!");
+    public List<Article> getArticleByAuthor(Long authorId){
+        Profile author = profileRepository.findById(authorId).orElseThrow(() -> new ProfileNotFound("Profile not found"));;
+        List<Article> article = articleRepository.findByAuthor(author, Sort.by(Sort.Order.desc("publishedAt")));
+        if (article == null) {
+            throw new ArticleNotFound("No article found for this author");
         }
-        Article article = articleFound.get(0);
-        article.setTitle(articleDTO.getTitle());
-        article.setContent(articleDTO.getContent());
-        article.setCategory(articleDTO.getCategory());
-        article.setArticleImage(articleDTO.getArticleImage());
-        articleRepository.save(article);
 
         return article;
     }
+
+    public List<Article> getAllArticles(){
+        return articleRepository.findAll();
+    }
+
+    public Article getArticleById(Long articleId){
+        Article articleById = articleRepository.findByArticleId(articleId);
+
+        return articleById;
+    }
+
+
+
+    public List<Article> getArticleByTitle(String title){
+        List<Article> articleByTitle = articleRepository.findByTitle(title);
+        if(articleByTitle.isEmpty()){
+            throw new ArticleNotFound("Article not found!");
+        }
+        return articleByTitle;
+    }
+
+
 
     //travaso
     public Article fromArticleDTOtoArticle(ArticleDTO articleDTO){

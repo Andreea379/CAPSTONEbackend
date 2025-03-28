@@ -1,12 +1,18 @@
 package com.example.capstone.Repositories;
 
 import com.example.capstone.Models.Article;
+import com.example.capstone.Models.Profile;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    Optional<Article> findByAuthor_User_Id(Long userId);
-    List<Article> findByArticleId(Long articleId);
+//    Article findByAuthor(Profile author);
+public List<Article> findByAuthor(Profile author , Sort sort);
+    Article findByArticleId(Long articleId);
+
+    List<Article> findByTitle(String title);
 }

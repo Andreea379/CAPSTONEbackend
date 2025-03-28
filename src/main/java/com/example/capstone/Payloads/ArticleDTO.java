@@ -19,7 +19,8 @@ public class ArticleDTO {
     @NotNull(message = "Category field couldn't be null")
     private String category;
     private LocalDate publishedAt;
-//    @NotBlank(message = "Article image field couldn't be empty")
-//    @URL
+    @NotBlank(message = "Article image field couldn't be empty")
+    @URL
     private String articleImage;
+    private String authorProfileImage;
 }
