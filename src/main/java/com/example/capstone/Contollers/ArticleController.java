@@ -53,7 +53,7 @@ public class ArticleController {
             articleDTO.setArticleImage(urlImage);
             articleDTO.setPublishedAt(LocalDate.now());
             articleService.saveArticle(articleDTO, profileId);
-            return new ResponseEntity<>("Article created", HttpStatus.CREATED);
+            return new ResponseEntity<>(articleDTO, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
         }

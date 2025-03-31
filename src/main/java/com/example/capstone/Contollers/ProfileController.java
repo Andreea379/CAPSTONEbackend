@@ -73,7 +73,7 @@ public class ProfileController {
             String urlImage = mapUpload.get("secure_url").toString();
             profileDTO.setProfileImage(urlImage);
             profileService.updateProfile(profileDTO, userId);
-            return new ResponseEntity<>("Profile updated!", HttpStatus.CREATED);
+            return new ResponseEntity<>(profileDTO, HttpStatus.CREATED);
         }catch (ProfileNotFound | IOException p){
             return new ResponseEntity<>("Profile not found!", HttpStatus.BAD_REQUEST);
         }
