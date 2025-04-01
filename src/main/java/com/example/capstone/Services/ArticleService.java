@@ -40,7 +40,13 @@ public class ArticleService {
     }
 
     public List<Article> getAllArticles(){
-        return articleRepository.findAll();
+    List<Article> articles = articleRepository.findAll();
+        for (Article article : articles) {
+            Profile author = article.getAuthor();
+            article.setAuthorProfileImage(author.getProfileImage());
+            articleRepository.save(article);
+        }
+        return articles;
     }
 
     public Article getArticleById(Long articleId){
