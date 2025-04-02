@@ -2,10 +2,12 @@ package com.example.capstone.Services;
 
 import com.example.capstone.Exceptions.ProfileNotFound;
 import com.example.capstone.Exceptions.UserNotFound;
+import com.example.capstone.Models.Article;
 import com.example.capstone.Models.Profile;
 import com.example.capstone.Models.User;
 import com.example.capstone.Payloads.ProfileDTO;
 import com.example.capstone.Payloads.Requests.RegistrationRequest;
+import com.example.capstone.Repositories.ArticleRepository;
 import com.example.capstone.Repositories.ProfileRepository;
 import com.example.capstone.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class ProfileService {
     UserRepository userRepository;
     @Autowired
     ProfileRepository profileRepository;
+    @Autowired
+    ArticleRepository articleRepository;
 
 
     public Optional<Profile> getProfileById(Long profileId) {
@@ -50,7 +54,11 @@ public class ProfileService {
         return profileByFirstName;
     }
 
-
+public Profile getProfileByArticleId(Long articleId){
+        Optional<Article> article = articleRepository.findById(articleId);
+        Profile profile = profileRepository.findByArticle(article);
+        return profile;
+}
     public Profile updateProfile(ProfileDTO profileDTO, Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFound("User not found"));

@@ -64,7 +64,15 @@ public class ProfileController {
             return new ResponseEntity<>("None profile found!", HttpStatus.BAD_REQUEST);
         }
     }
-
+@GetMapping("/article/{articleId}")
+public ResponseEntity<?> getProfileByArticle (@PathVariable Long articleId){
+    try{
+        Profile profile = profileService.getProfileByArticleId(articleId);
+        return new ResponseEntity<>(profile, HttpStatus.OK);
+    }catch (ProfileNotFound p){
+        return new ResponseEntity<>("None profile found!", HttpStatus.BAD_REQUEST);
+    }
+}
     @PutMapping("/update/{userId}")
     public ResponseEntity<?> updateProfile(@RequestPart("profile") ProfileDTO profileDTO, @PathVariable Long userId, @RequestPart(value = "profileImage") MultipartFile profileImage){
 
